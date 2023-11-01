@@ -98,9 +98,16 @@ def execute_api_code(code):
 
 
 def get_imported_libraries(code):
-    # Regular expression to match 'import xyz' or 'from xyz import ...'
-    matches = re.findall(r'(?:import|from)\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\s*,\s*[a-zA-Z_][a-zA-Z0-9_]*)*)', code)
-    libraries = [match.split(',')[0].strip() for match in matches]
+    # Match 'import xyz' pattern
+    direct_imports = re.findall(r'^\s*import\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\s*,\s*[a-zA-Z_][a-zA-Z0-9_]*)*)', code, re.MULTILINE)
+    
+    # Match 'from xyz import ...' pattern
+    from_imports = re.findall(r'^\s*from\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+import', code, re.MULTILINE)
+    
+    libraries = list(direct_imports) + list(from_imports)
+    
+    # Flatten the list and remove any spaces
+    libraries = [lib.strip() for sublist in libraries for lib in sublist.split(',')]
     return libraries
 
 def is_installed(library):
