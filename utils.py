@@ -104,11 +104,10 @@ def get_imported_libraries(code):
     return libraries
 
 def is_installed(library):
-    try:
-        subprocess.run([sys.executable, "-m", "pip", "show", library], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return True
-    except Exception as e:
-        return False
+    result = subprocess.run([sys.executable, "-m", "pip", "show", library], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # If the command was successful, the library is installed
+    return result.returncode == 0
+
 
 def install_library(library):
     subprocess.run([sys.executable, "-m", "pip", "install", library])
@@ -117,6 +116,7 @@ def install_missing_libraries(code):
     libraries = get_imported_libraries(code)
     for library in libraries:
         if not is_installed(library):
+            print()
             print(f"Installing {library}...")
             install_library(library)
             print(f"{library} installed!")
