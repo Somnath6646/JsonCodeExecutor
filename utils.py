@@ -5,6 +5,9 @@ import sys
 import os
 from io import StringIO
 from dotenv import load_dotenv
+import re
+import subprocess
+import sys
 load_dotenv()
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -89,3 +92,37 @@ def execute_api_code(code):
         sys.stdout = original_stdout
 
     return output
+
+
+
+
+
+def get_imported_libraries(code):
+    # Regular expression to match 'import xyz' or 'from xyz import ...'
+    matches = re.findall(r'(?:import|from)\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\s*,\s*[a-zA-Z_][a-zA-Z0-9_]*)*)', code)
+    libraries = [match.split(',')[0].strip() for match in matches]
+    return libraries
+
+def is_installed(library):
+    try:
+        subprocess.run([sys.executable, "-m", "pip", "show", library], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return True
+    except Exception as e:
+        return False
+
+def install_library(library):
+    subprocess.run([sys.executable, "-m", "pip", "install", library])
+
+def install_missing_libraries(code):
+    libraries = get_imported_libraries(code)
+    for library in libraries:
+        if not is_installed(library):
+            print(f"Installing {library}...")
+            install_library(library)
+            print(f"{library} installed!")
+        else:
+            print(f"{library} is already installed.")
+
+
+
+

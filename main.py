@@ -1,5 +1,5 @@
 import json
-from utils import describe_json, generate_response, execute_api_code, colored
+from utils import describe_json, generate_response, execute_api_code, colored, install_missing_libraries
 
 with open('sample.json', 'r') as f:
     data = json.load(f)
@@ -48,7 +48,7 @@ Begin generating the code now.
 
 
 code = f"data = \'\'\'{json.dumps(data)}\'\'\'\n"+generate_response(prompt=prompt)
-
+install_missing_libraries(code)
 output = execute_api_code(code=code)
 print(colored(output, "green"))
 
