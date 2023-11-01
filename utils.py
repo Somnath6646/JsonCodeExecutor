@@ -8,6 +8,9 @@ from dotenv import load_dotenv
 import re
 import subprocess
 import sys
+from stdlib_list import stdlib_list
+
+STDLIB = set(stdlib_list())
 load_dotenv()
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -111,6 +114,8 @@ def get_imported_libraries(code):
     return libraries
 
 def is_installed(library):
+    if library in STDLIB:
+        return True
     result = subprocess.run([sys.executable, "-m", "pip", "show", library], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # If the command was successful, the library is installed
     return result.returncode == 0

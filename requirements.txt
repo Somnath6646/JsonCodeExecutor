@@ -2,3 +2,4 @@ openai
 termcolor
 python-dotenv
 langchain
+stdlib-list
