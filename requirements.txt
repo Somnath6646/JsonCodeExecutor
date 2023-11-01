@@ -1,0 +1,4 @@
+openai
+termcolor
+python-dotenv
+langchain
